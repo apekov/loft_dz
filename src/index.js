@@ -107,20 +107,8 @@ function returnArgumentsArray() {
        array[i] = arguments[i];
      }
      array.splice(0, 1);
-     // fn = fn.apply(this, array);
      return () => {return fn.apply(this, array)};
-     // fn = fn.bind(null, a, b);
-     // return fn;
-
  }
-
- function sum(a, b ,c) {
-   return a + b + c;
- }
-
- var newSum = bindFunction(sum, 2, 4, 5);
-
- console.log(newSum());
 
 export {
     returnFirstArgument,
