@@ -104,7 +104,7 @@ function returnArgumentsArray(...args) {
  function bindFunction(fn, ...args) {
      return () => {return fn.apply(this, args)};
  }
-
+ 
 
 export {
     returnFirstArgument,
