@@ -34,9 +34,9 @@ function map(array, fn) {
  Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
  */
  function reduce(array, fn, initial) {
- let previousValue = (initial === undefined) ? array[0] : initial;
-
-   for (let i = (initial === undefined) ? 1 : 0; i < array.length; i++) {
+ let previousValue = (!initial) ? array[0] : initial;
+ let begin = (!initial) ? 1 : 0;
+   for (let i = begin; i < array.length; i++) {
      previousValue = fn(previousValue, array[i], i, array);
    }
    return previousValue;
@@ -67,44 +67,66 @@ function upperProps(obj) {
  Напишите аналог встроенного метода slice для работы с массивами
  Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
  */
-function slice(array, from = 0, to = array.length) {
-  let copy = [];
-  if (to > array.length){to = array.length};
-  if(from < 0 && Math.abs(from) > array.length){from = 0};
-  if(Math.abs(from) > array.length || Math.abs(from) > array.length){
-    return [];
-  }
-  else if(from < 0 && to < 0){
-    for (var i = Math.abs(from) - 1; i < array.length + to; i++) {
-      copy.push(array[i]);
-    }
-    return copy;
-  }
-  else if(from > 0 && to < 0){
-    for (var i = from; i < array.length + to; i++) {
-      copy.push(array[i]);
-    }
-    return copy
-  }
-  else if(from < 0){
-    for (var i = array.length + from; i < to; i++) {
-      copy.push(array[i]);
-    }
-    return copy;
-  }
-    else if(to < 0) {
-      for (var i = from; i < array.length + to; i++) {
-        copy.push(array[i]);
-      }
-      return copy;
-    }
-    else {
-      for (var i = from; i < to; i++) {
-        copy.push(array[i]);
-      }
-    }
-    return copy;
-}
+ function slice(array, from = 0, to = array.length) {
+   let copy = [];
+   if(to > array.length){ to = array.length;}
+   if(from < 0 && Math.abs(from) > array.length){from = 0};
+   if(Math.abs(from) > array.length){return [];}
+
+   if(from < 0 && to < 0){
+     from = Math.abs(from) - 1;
+   }else if (from < 0) {
+     from = array.length + from;
+   }
+   if((from < 0 && to < 0) || (from > 0 && to < 0) || (to < 0)){
+     to = array.length + to;
+   }
+   for (var i = from; i < to; i++) {
+     copy.push(array[i]);
+   }
+   return copy;
+ }
+ let array = [1, 2, 3, 4, 5, 6, 7];
+ console.log(array.slice(array));
+ console.log(slice(array));
+// function slice(array, from = 0, to = array.length) {
+//   let copy = [];
+//   if (to > array.length){to = array.length};
+//   if(from < 0 && Math.abs(from) > array.length){from = 0};
+//   if(Math.abs(from) > array.length || Math.abs(from) > array.length){
+//     return [];
+//   }
+//   else if(from < 0 && to < 0){
+//     for (var i = Math.abs(from) - 1; i < array.length + to; i++) {
+//       copy.push(array[i]);
+//     }
+//     return copy;
+//   }
+//   else if(from > 0 && to < 0){
+//     for (var i = from; i < array.length + to; i++) {
+//       copy.push(array[i]);
+//     }
+//     return copy
+//   }
+//   else if(from < 0){
+//     for (var i = array.length + from; i < to; i++) {
+//       copy.push(array[i]);
+//     }
+//     return copy;
+//   }
+//     else if(to < 0) {
+//       for (var i = from; i < array.length + to; i++) {
+//         copy.push(array[i]);
+//       }
+//       return copy;
+//     }
+//     else {
+//       for (var i = from; i < to; i++) {
+//         copy.push(array[i]);
+//       }
+//     }
+//     return copy;
+// }
 
 
 /*
