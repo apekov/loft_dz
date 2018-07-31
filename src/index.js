@@ -33,22 +33,14 @@ function map(array, fn) {
  Напишите аналог встроенного метода reduce для работы с массивами
  Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
  */
-function reduce(array, fn, initial) {
-let previousValue = 0;
-if(initial === undefined){
-  previousValue = array[0];
-    for (var i = 1; i < array.length; i++) {
-      previousValue = fn(previousValue, array[i], i, array);
-    }
-    return previousValue;
-  }else {
-    previousValue = array[initial];
-    for (var i = initial; i < array.length; i++) {
-      previousValue = fn(previousValue, array[i], i, array);
-    }
-    return previousValue;
-  }
-}
+ function reduce(array, fn, initial) {
+ let previousValue = (initial === undefined) ? array[0] : initial;
+
+   for (let i = (initial === undefined) ? 1 : 0; i < array.length; i++) {
+     previousValue = fn(previousValue, array[i], i, array);
+   }
+   return previousValue;
+ }
 
 // let array = randomNumberArray();
 // console.log(array.reduce((prev, el) => prev + el));
