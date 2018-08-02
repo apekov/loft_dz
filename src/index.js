@@ -17,26 +17,23 @@
    isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
 function isAllTrue(array, fn) {
-
-  if(typeof array != "object" || array.length == 0 || Object.keys(array).length == 0){
+  if (typeof array != "object" || array.length == 0 || Object.keys(array).length == 0) {
     throw new Error('empty array!');
-  }
-  else if (typeof fn != "function") {
+  } else if (typeof fn != "function") {
     throw new Error('fn is not a function!');
   }
-
   let result;
-  for (let i = 0; i < array.length; i++){
-    // result = (fn(array[i]) == false) ? false : true;
-    if(fn(array[i]) == false){
+  for (var i = 0; i < array.length; i++) {
+    if (fn(array[i]) == false) {
       result = false;
       break;
-    }else {
+    } else {
       result = true;
     }
   }
   return result;
 }
+
 // console.log(isAllTrue([1], n => n < 10));
 // isAllTrue({}, n => n < 10); // вернет true
 // isAllTrue([100, 2, 3, 4, 5], n => n < 10); // вернет false
@@ -58,26 +55,23 @@ function isAllTrue(array, fn) {
    isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
  */
 function isSomeTrue(array, fn) {
-
-  if(typeof array != "object" || array.length == 0 || Object.keys(array).length == 0){
+  if (typeof array != "object" || array.length == 0 || Object.keys(array).length == 0) {
     throw new Error('empty array!');
-  }
-  else if (typeof fn != "function") {
+  } else if (typeof fn != "function") {
     throw new Error('fn is not a function!');
   }
   let result;
-  for (let i = 0; i < array.length; i++){
+  for (let i = 0; i < array.length; i++) {
     // result = (fn(array[i]) == false) ? false : true;
-    if(fn(array[i]) == true){
+    if (fn(array[i]) == true) {
       result = true;
       break;
-    }else {
+    } else {
       result = false;
     }
   }
   return result;
 }
-
 /*
  Задание 3:
 
@@ -89,21 +83,20 @@ function isSomeTrue(array, fn) {
  3.3: Необходимо выбрасывать исключение в случаях:
    - fn не является функцией (с текстом "fn is not a function")
  */
-function returnBadArguments(fn, ...args) {
-let array = [];
-
+  function returnBadArguments(fn, ...args) {
+    let array = [];
     if (typeof fn != "function") {
       throw new Error('fn is not a function!');
     }
     for (let i = 0; i < args.length; i++) {
       try {
-      fn(args[i]);
+        fn(args[i]);
       } catch (e) {
         array.push(args[i]);
       }
     }
-return array;
-}
+    return array;
+  }
 
 // function fn(a){
 //     if (a % 2 != 0) {
@@ -130,33 +123,25 @@ return array;
    - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
 function calculator(number = 0) {
-
-  if(typeof number != "number"){
+  if (typeof number != "number") {
     throw new Error('number is not a number!')
   }
   let obj = {
-    sum: function (...args) {
-      return args.reduce((prev, current) => prev + current, number);
-    },
-    dif: function (...args) {
-      return args.reduce((prev, current) => prev - current, number);
-    },
-    div: function (...args) {
-        for (var i = 0; i < args.length; i++) {
-          if(args[i] == 0){
-            throw new Error('division by 0');
-          }
+    sum: (...args) => {return args.reduce((prev, current) => prev + current, number)},
+    dif: (...args) => {return args.reduce((prev, current) => prev - current, number)},
+    div: (...args) => {
+      for (var i = 0; i < args.length; i++) {
+        if (args[i] == 0) {
+          throw new Error('division by 0');
         }
-        return args.reduce((prev, current) => prev / current, number);
-
+      }
+      return args.reduce((prev, current) => prev / current, number);
     },
-    mul: function (...args) {
-      return args.reduce((prev, current) => prev * current, number);
-    }
+    mul: (...args) => {return args.reduce((prev, current) => prev * current, number)}
   }
   return obj;
 }
-console.log(calculator(2).sum(1,1,4));
+// console.log(calculator(2).sum(1,1,4));
 /* При решении задач, пострайтесь использовать отладчик */
 
 export {
