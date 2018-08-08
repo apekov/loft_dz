@@ -162,7 +162,7 @@ function findError(where) {
      let nodes = count.childNodes;
      for (let i = 0; i < nodes.length; i++) {
        if(nodes[i].classList){
-         for (item of nodes[i].classList) {
+         for (let item of nodes[i].classList) {
            if(item in arrayСlasses){
              arrayСlasses[item] += 1;
            }else{
@@ -223,13 +223,23 @@ function findError(where) {
    }
  */
  function observeChildNodes(where, fn) {
+   let info = {};
+   info.nodes = [];
    let observer = new MutationObserver(function(mutations) {
      mutations.forEach(function(mutation) {
        if(mutation.addedNodes.length > 0){
-         fn();
+         info.type = 'insert';
+         for (let i = 0; i < mutation.addedNodes.length; i++) {
+           info.nodes.push(mutation.addedNodes[i]);
+         }
+         fn(info);
        }
        if(mutation.removedNodes.length > 0){
-         fn();
+         info.type = 'remove';
+         for (let i = 0; i < mutation.removedNodes.length; i++) {
+           info.nodes.push(mutation.removedNodes[i]);
+         }
+         fn(info);
        }
      });
    });
