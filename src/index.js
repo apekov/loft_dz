@@ -118,13 +118,18 @@ function findError(where) {
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
  function deleteTextNodesRecursive(where) {
-   for (let item of where.childNodes) {
-     if(item.nodeType == 3){
-       where.removeChild(item)
+   let nodes = where.childNodes;
+   let array = [];
+   for (let i = 0; i < nodes.length; i++) {
+     if(nodes[i].nodeType !== 1){
+         array.push(nodes[i]);
      }
-     if(item.nodeType == 1){
-        deleteTextNodesRecursive(item);
+     if(nodes[i].nodeType === 1){
+        deleteTextNodesRecursive(nodes[i]);
      }
+   }
+   for (var i = 0; i < array.length; i++) {
+     array[i].remove();
    }
  }
 
@@ -148,8 +153,42 @@ function findError(where) {
      texts: 3
    }
  */
-function collectDOMStat(root) {
-}
+ function collectDOMStat(root) {
+   let myObj = {};
+   let arrayTag = {};
+   let arrayText = [];
+   let arrayСlasses = {};
+   function counter(count = root){
+     let nodes = count.childNodes;
+     for (let i = 0; i < nodes.length; i++) {
+       if(nodes[i].classList){
+         for (item of nodes[i].classList) {
+           if(item in arrayСlasses){
+             arrayСlasses[item] += 1;
+           }else{
+             arrayСlasses[item] = 1;
+           }
+         }
+         if(nodes[i].tagName in arrayTag){
+           arrayTag[nodes[i].tagName] += 1;
+         }else{
+           arrayTag[nodes[i].tagName] = 1;
+         }
+       }
+       if(nodes[i].nodeType === 3){
+         arrayText.push(nodes[i]);
+       }
+       if(nodes[i].childNodes.length !== 0){
+          counter(nodes[i]);
+       }
+     }
+   }
+   counter();
+   myObj.tags = arrayTag;
+   myObj.classes = arrayСlasses;
+   myObj.texts = arrayText.length;
+   return myObj;
+ }
 
 /*
  Задание 8 *:
@@ -183,8 +222,21 @@ function collectDOMStat(root) {
      nodes: [div]
    }
  */
-function observeChildNodes(where, fn) {
-}
+ function observeChildNodes(where, fn) {
+   let observer = new MutationObserver(function(mutations) {
+     mutations.forEach(function(mutation) {
+       if(mutation.addedNodes.length > 0){
+         fn();
+       }
+       if(mutation.removedNodes.length > 0){
+         fn();
+       }
+     });
+   });
+   observer.observe(where, {
+     childList: true
+    });
+ }
 
 export {
     createDivWithText,
