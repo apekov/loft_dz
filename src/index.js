@@ -227,20 +227,9 @@ function findError(where) {
    info.nodes = [];
    let observer = new MutationObserver(function(mutations) {
      mutations.forEach(function(mutation) {
-       if(mutation.addedNodes.length > 0){
-         info.type = 'insert';
-         for (let i = 0; i < mutation.addedNodes.length; i++) {
-           info.nodes.push(mutation.addedNodes[i]);
-         }
-         fn(info);
-       }
-       if(mutation.removedNodes.length > 0){
-         info.type = 'remove';
-         for (let i = 0; i < mutation.removedNodes.length; i++) {
-           info.nodes.push(mutation.removedNodes[i]);
-         }
-         fn(info);
-       }
+       info.type = (mutation.addedNodes.length > 0) ? 'insert' : (mutation.removedNodes.length > 0) ? 'remove' : '';
+       info.nodes = (mutation.addedNodes.length > 0) ? [...mutation.addedNodes] : (mutation.removedNodes.length > 0) ? [...mutation.removedNodes] : '';
+       fn(info);
      });
    });
    observer.observe(where, {
