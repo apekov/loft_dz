@@ -27,22 +27,24 @@ const homeworkContainer = document.querySelector('#homework-container');
    homeworkContainer.appendChild(newDiv);
  */
 function createDiv() {
- let div = document.createElement('div');
- function randomInteger(min, max) {
-    var rand = min - 0.5 + Math.random() * (max - min + 1)
-    rand = Math.round(rand);
-    return rand;
-  }
-  let random = randomInteger(5, 200);
-  div.style.backgroundColor = '#000';
-  div.style.top = `${random}px`;
-  div.style.left = `${random}px`;
-  // div.style.marginTop = `${random}px`;
-  // div.style.marginLeft = `${random}px`;
-  div.style.width = '40px';
-  div.style.height = '40px';
-  div.classList.add('draggable-div');
- return div;
+    let div = document.createElement('div');
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function getRandomColor() {
+        let hex = Math.floor(Math.random() * 0xFFFFFF);
+        return "#" + ("000000" + hex.toString(16)).substr(-6);
+    }
+    let random = getRandomInt(5, 200);
+
+    div.style.backgroundColor = getRandomColor();
+    div.style.top = `${random}px`;
+    div.style.left = `${random}px`;
+    div.style.width = `${random}px`;
+    div.style.height = `${random}px`;
+
+    return div;
 }
 
 /*
@@ -54,45 +56,45 @@ function createDiv() {
    addListeners(newDiv);
  */
 function addListeners(target) {
-  target.onmousedown = function(e) {
+    target.onmousedown = function(e) {
 
-    var coords = getCoords(target);
-    var shiftX = e.pageX - coords.left;
-    var shiftY = e.pageY - coords.top;
+        let coords = getCoords(target);
+        let shiftX = e.pageX - coords.left;
+        let shiftY = e.pageY - coords.top;
 
-    target.style.position = 'absolute';
-    document.body.appendChild(target);
-    moveAt(e);
+        target.style.position = 'absolute';
+        document.body.appendChild(target);
+        moveAt(e);
 
-    target.style.zIndex = 1000;
+        target.style.zIndex = 1000;
 
-    function moveAt(e) {
-      target.style.left = e.pageX - shiftX + 'px';
-      target.style.top = e.pageY - shiftY + 'px';
+        function moveAt(e) {
+            target.style.left = e.pageX - shiftX + 'px';
+            target.style.top = e.pageY - shiftY + 'px';
+        }
+
+        document.onmousemove = function(e) {
+            moveAt(e);
+        };
+
+        target.onmouseup = function() {
+            document.onmousemove = null;
+            target.onmouseup = null;
+        };
+
     }
 
-    document.onmousemove = function(e) {
-      moveAt(e);
+    target.ondragstart = function() {
+        return false;
     };
 
-    target.onmouseup = function() {
-      document.onmousemove = null;
-      target.onmouseup = null;
-    };
-
-  }
-
-  target.ondragstart = function() {
-    return false;
-  };
-
-  function getCoords(elem) {
-    var box = elem.getBoundingClientRect();
-    return {
-      top: box.top + pageYOffset,
-      left: box.left + pageXOffset
-    };
-  }
+    function getCoords(elem) {
+        let box = elem.getBoundingClientRect();
+        return {
+          top: box.top + pageYOffset,
+          left: box.left + pageXOffset
+        };
+    }
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
@@ -103,7 +105,6 @@ addDivButton.addEventListener('click', function() {
 
     // добавить на страницу
     homeworkContainer .appendChild(div);
-    // console.log(div);
     // назначить обработчики событий мыши для реализации D&D
     addListeners(div);
     // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
