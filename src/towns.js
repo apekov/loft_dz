@@ -37,8 +37,65 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
+    return new Promise((resolve, reject) =>{
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
+        xhr.responseType = 'json';
+        xhr.send();
+        xhr.addEventListener('load', () => {
+            if (xhr.status != 200) {
+                createErrorButton();
+                reject();
+            } else {
+                createCityList(sortCyty(xhr.response));
+                resolve(sortCyty(xhr.response));
+            }
+        });
+        xhr.addEventListener('error', reject);
+        xhr.addEventListener('abort', reject);
+    })
+    function sortCyty(city) {
+        city.sort(function(a, b) {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+
+            return 0;
+        })
+
+        return city;
+    }
+}
+loadTowns();
+loadTowns().then(attribute => {
+    console.log(attribute);
+});
+
+function createCityList(atribute) {
+    let fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < atribute.length; i++) {
+        let item = document.createElement('li');
+
+        item.classList.add('item');
+        item.textContent = atribute[i].name;
+        fragment.appendChild(item);
+    }
+    loadingBlock.innerHTML = '';
+    loadingBlock.appendChild(fragment);
 }
 
+function createErrorButton() {
+    let erorrButton = document.createElement('button');
+
+    erorrButton.textContent = 'Повторить';
+    loadingBlock.innerHTML = '';
+    loadingBlock.appendChild(erorrButton);
+    erorrButton.addEventListener('click', () => {
+        loadTowns();
+    })
+    alert("Что то пошло не так, попробуйте еще раз");
+}
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
  Проверка должна происходить без учета регистра символов
@@ -51,10 +108,18 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
+    if (full.toLocaleUpperCase().indexOf(chunk.toLocaleUpperCase()) != -1) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 /* Блок с надписью "Загрузка" */
 const loadingBlock = homeworkContainer.querySelector('#loading-block');
+/* Cписок загруженных городов */
+const loadingList = homeworkContainer.querySelector('#cityList');
 /* Блок с текстовым полем и результатом поиска */
 const filterBlock = homeworkContainer.querySelector('#filter-block');
 /* Текстовое поле для поиска по городам */
@@ -64,8 +129,25 @@ const filterResult = homeworkContainer.querySelector('#filter-result');
 
 filterInput.addEventListener('keyup', function() {
     // это обработчик нажатия кливиш в текстовом поле
+    filterResult.innerHTML = ''
+    if (filterInput.value == '') {
+        filterResult.innerHTML = '';
+    }else{
+        loadTowns().then(attribute => {
+            for (var i = 0; i < attribute.length; i++) {
+                if (isMatching(attribute[i].name, filterInput.value) == true) {
+                    createElementResult(attribute[i].name);
+                }
+            }
+        })
+    }
 });
+function createElementResult(attribute) {
+    let item = document.createElement('li');
 
+    item.textContent = attribute;
+    filterResult.appendChild(item);
+}
 export {
     loadTowns,
     isMatching
