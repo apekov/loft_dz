@@ -1,3 +1,4 @@
+import {createErrorButton, createElementResult, createCityList} from '../src/function';
 /*
  Страница должна предварительно загрузить список городов из
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
@@ -45,7 +46,7 @@ function loadTowns() {
         xhr.send();
         xhr.addEventListener('load', () => {
             if (xhr.status != 200) {
-                createErrorButton();
+                createErrorButton(loadTowns);
                 reject();
             } else {
                 createCityList(sortCyty(xhr.response));
@@ -56,7 +57,7 @@ function loadTowns() {
         xhr.addEventListener('abort', reject);
     })
     function sortCyty(city) {
-        city.sort(function(a, b) {
+        city.sort((a, b) => {
             if (a.name < b.name) return -1;
             if (a.name > b.name) return 1;
 
@@ -67,35 +68,6 @@ function loadTowns() {
     }
 }
 loadTowns();
-loadTowns().then(attribute => {
-    console.log(attribute);
-});
-
-function createCityList(atribute) {
-    let fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < atribute.length; i++) {
-        let item = document.createElement('li');
-
-        item.classList.add('item');
-        item.textContent = atribute[i].name;
-        fragment.appendChild(item);
-    }
-    loadingBlock.innerHTML = '';
-    loadingBlock.appendChild(fragment);
-}
-
-function createErrorButton() {
-    let erorrButton = document.createElement('button');
-
-    erorrButton.textContent = 'Повторить';
-    loadingBlock.innerHTML = '';
-    loadingBlock.appendChild(erorrButton);
-    erorrButton.addEventListener('click', () => {
-        loadTowns();
-    })
-    alert("Что то пошло не так, попробуйте еще раз");
-}
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
  Проверка должна происходить без учета регистра символов
@@ -142,12 +114,7 @@ filterInput.addEventListener('keyup', function() {
         })
     }
 });
-function createElementResult(attribute) {
-    let item = document.createElement('li');
 
-    item.textContent = attribute;
-    filterResult.appendChild(item);
-}
 export {
     loadTowns,
     isMatching
