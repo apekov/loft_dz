@@ -44,6 +44,7 @@ sumWithDefaults(10);
  */
 function returnFnResult(fn) {
   return fn();
+  const loft = () => {return 5;}
 }
 /*
  Задание 4:
