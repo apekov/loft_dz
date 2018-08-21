@@ -43,56 +43,38 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-function getCookie() {
-    return document.cookie.split('; ').reduce((prev, current) => {
-        let [name, value] = current.split('=');
-        prev[name] = value;
-        return prev;
-    }, {});
-}
+function getCookie(item) {
+    let obj = {};
 
-function getCookieList() {
-    let object = getCookie();
+    if (item == null) {
+        obj = document.cookie.split('; ').reduce((prev, current) => {
+            let [name, value] = current.split('=');
 
-    for (let key in object) {
-        if (Object.prototype.hasOwnProperty.call(object, key)) {
-            let row = document.createElement('tr');
-            let deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Удалить';
-            deleteButton.addEventListener('click', () => {
-                deleteCookie(key);
-                listTable.innerHTML = '';
-                getCookieList();
-            })
-            row.innerHTML = `<th>${key}</th><th>${object[key]}</th>`;
-            row.appendChild(deleteButton);
-            listTable.appendChild(row);
-        }
+            prev[name] = value
+
+            return prev;
+        }, {})
+    } else {
+        obj = document.cookie.split('; ').reduce((prev, current) => {
+            let [name, value] = current.split('=');
+
+            if (name == item) {
+                prev[name] = value;
+            }
+
+            return prev;
+        }, {});
     }
-}
 
-function getCookieListFiltred(key, value) {
-    let row = document.createElement('tr');
-    let deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Удалить';
-    deleteButton.addEventListener('click', () => {
-        deleteCookie(key);
-        listTable.innerHTML = '';
-        getCookieList();
-    })
-    row.innerHTML = `<th>${key}</th><th>${value}</th>`;
-    row.appendChild(deleteButton);
-    listTable.appendChild(row);
+    return obj;
 }
 
 function isMatching(full, chunk) {
-    if (full.toLocaleUpperCase().indexOf(chunk.toLocaleUpperCase()) != -1) {
-        return true;
-    } else {
-        return false;
-    }
+    let isTrue = (full.toLocaleUpperCase().indexOf(chunk.toLocaleUpperCase()) != -1) ? true : false;
 
+    return isTrue;
 }
+
 function setCookie(name, value) {
     let cookieObject = getCookie();
 
@@ -104,17 +86,38 @@ function setCookie(name, value) {
     }
 }
 
-setInterval(function() {
-    if (document.cookie == '') {
-        listTable.innerHTML = '';
-    }
-}, 100);
-
 function deleteCookie(name) {
     let date = new Date(0);
 
     document.cookie = `${name}=; path=/; expires=` + date.toUTCString();
 }
+
+function getCookieList (itemfilter = null, filter = false) {
+    let cookie = getCookie(itemfilter);
+
+    for (let item in cookie) {
+        if (cookie.hasOwnProperty(item)) {
+            let tr = document.createElement('tr');
+            let th = document.createElement('th');
+            let deleteButton = document.createElement('button');
+
+            deleteButton.addEventListener('click', () => {
+                deleteCookie(item);
+                listTable.innerHTML = '';
+                if (document.cookie != '') {
+                    getCookieList();
+                }
+
+            })
+            deleteButton.textContent = 'Delete';
+            tr.innerHTML = `<th>${item}</th><th>${cookie[item]}</th>`;
+            tr.appendChild(th.appendChild(deleteButton));
+            listTable.appendChild(tr);
+        }
+    }
+}
+
+getCookieList();
 
 filterNameInput.addEventListener('keyup', function() {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
@@ -123,22 +126,19 @@ filterNameInput.addEventListener('keyup', function() {
         getCookieList();
     } else {
         let object = getCookie();
+
         listTable.innerHTML = '';
         for (let item in object) {
             if (object.hasOwnProperty(item)) {
-                if ((isMatching(item, filterNameInput.value) == true) || (isMatching(object[item], filterNameInput.value) == true)) {
-                    getCookieListFiltred(item, object[item]);
-                    console.log(item);
+                if (isMatching(item, filterNameInput.value) == true) {
+                    getCookieList(item, true);
                 }
             }
         }
     }
 });
-getCookieList();
 addButton.addEventListener('click', () => {
     setCookie(addNameInput.value, addValueInput.value);
-    addNameInput.value = '';
-    addValueInput.value = '';
     listTable.innerHTML = '';
     getCookieList();
 });
