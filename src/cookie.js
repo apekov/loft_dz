@@ -43,10 +43,10 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
-function getCookie(item) {
+function getCookie(item, itemValue) {
     let obj = {};
 
-    if (item == null) {
+    if (!item && !itemValue) {
         obj = document.cookie.split('; ').reduce((prev, current) => {
             let [name, value] = current.split('=');
 
@@ -54,11 +54,21 @@ function getCookie(item) {
 
             return prev;
         }, {})
-    } else {
+    } else if (item && !itemValue) {
         obj = document.cookie.split('; ').reduce((prev, current) => {
             let [name, value] = current.split('=');
 
-            if (name == item) {
+            if ((name === item) || (value === itemValue)) {
+                prev[name] = value;
+            }
+
+            return prev;
+        }, {});
+    } else if (!item && itemValue) {
+        obj = document.cookie.split('; ').reduce((prev, current) => {
+            let [name, value] = current.split('=');
+
+            if ((name === item) || (value === itemValue)) {
                 prev[name] = value;
             }
 
@@ -92,8 +102,8 @@ function deleteCookie(name) {
     document.cookie = `${name}=; path=/; expires=` + date.toUTCString();
 }
 
-function getCookieList (itemfilter = null, filter = false) {
-    let cookie = getCookie(itemfilter);
+function getCookieList (itemName = null, itemValue = null) {
+    let cookie = getCookie(itemName, itemValue);
 
     for (let item in cookie) {
         if (cookie.hasOwnProperty(item)) {
@@ -117,28 +127,34 @@ function getCookieList (itemfilter = null, filter = false) {
     }
 }
 
-getCookieList();
-
-filterNameInput.addEventListener('keyup', function() {
-    // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
-    if (filterNameInput.value == '') {
+function filtredCookie() {
+    if (filterNameInput.value === '') {
         listTable.innerHTML = '';
         getCookieList();
     } else {
         let object = getCookie();
 
-        listTable.innerHTML = '';
+        // listTable.innerHTML = '';
         for (let item in object) {
             if (object.hasOwnProperty(item)) {
-                if (isMatching(item, filterNameInput.value) == true) {
-                    getCookieList(item, true);
+                if (isMatching(item, filterNameInput.value)) {
+                    getCookieList(item, null);
+                } else if (isMatching(object[item], filterNameInput.value)) {
+                    getCookieList(null, object[item]);
                 }
             }
         }
     }
+}
+
+getCookieList();
+filterNameInput.addEventListener('keyup', function() {
+    // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    listTable.innerHTML = '';
+    filtredCookie();
 });
 addButton.addEventListener('click', () => {
     setCookie(addNameInput.value, addValueInput.value);
     listTable.innerHTML = '';
-    getCookieList();
+    filtredCookie();
 });
